@@ -1,4 +1,31 @@
+# Python
 *.pyc
-__pycache__
+__pycache__/
+.venv/
+venv/
+
+# Django
 db.sqlite3
+staticfiles/
+
+# Secrets and local config
+.env
+*.tfvars
+!*.tfvars.example
+kubeconfig*
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Helm
+deploy/helm/**/charts/*.tgz
+
+# OS / editor
 .DS_Store
+.idea/
+
+# Course material (not part of the project)
+preski/
