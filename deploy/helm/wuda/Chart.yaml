@@ -1,0 +1,6 @@
+apiVersion: v2
+name: wuda
+description: Django polls application with an optional in-cluster PostgreSQL
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

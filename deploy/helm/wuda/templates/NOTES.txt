@@ -1,0 +1,4 @@
+Application: {{ if .Values.ingress.tls.enabled }}https{{ else }}http{{ end }}://{{ .Values.ingress.host }}/polls/
+
+Create an admin user:
+  kubectl -n {{ .Release.Namespace }} exec deploy/{{ include "wuda.fullname" . }} -- python manage.py createsuperuser

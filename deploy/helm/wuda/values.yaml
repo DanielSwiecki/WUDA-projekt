@@ -1,0 +1,66 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/OWNER/wuda
+  tag: ""            # defaults to the chart appVersion
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+django:
+  debug: false
+  logLevel: INFO
+  existingSecret: ""   # secret holding the key below; created by the chart when empty
+  existingSecretKey: secret-key
+  secretKey: ""        # generated once and kept across upgrades when empty
+  extraAllowedHosts: []
+  csrfTrustedOrigins: []  # derived from ingress.host when empty
+
+# Extra plain environment variables for the application
+env: {}
+# Extra raw container env entries (valueFrom etc.)
+extraEnv: []
+
+database:
+  host: ""             # required when postgresql.enabled is false
+  port: 5432
+  name: polls
+  user: polls
+  password: ""         # ignored when existingSecret is set
+  existingSecret: ""
+  existingSecretKey: password
+
+postgresql:
+  enabled: true
+  image: postgres:16-alpine
+  persistence:
+    size: 2Gi
+    storageClass: ""
+  resources:
+    requests: {cpu: 50m, memory: 128Mi}
+    limits: {memory: 512Mi}
+
+service:
+  port: 80
+
+ingress:
+  enabled: true
+  className: traefik
+  host: wuda.local
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+resources:
+  requests: {cpu: 100m, memory: 128Mi}
+  limits: {memory: 384Mi}
+
+migrations:
+  enabled: true
