@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 2 || $1 != localhost ]]; then
+  printf '%s\n' 'Usage: wuda-k3s-install localhost <channel-or-version>' >&2
+  exit 2
+fi
+
+release=$2
+case "$release" in
+  v[0-9]*.[0-9]*.[0-9]*+k3s[0-9]*) export INSTALL_K3S_VERSION=$release ;;
+  stable|latest|testing|stable-[0-9]*.[0-9]*) export INSTALL_K3S_CHANNEL=$release ;;
+  *)
+    printf '%s\n' 'Unsupported k3s channel or version.' >&2
+    exit 2
+    ;;
+esac
+
+export INSTALL_K3S_EXEC='server --tls-san localhost'
+curl -sfL https://get.k3s.io | sh -s -
+/usr/local/bin/k3s kubectl wait --for=condition=Ready node --all --timeout=180s

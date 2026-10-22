@@ -1,0 +1,4 @@
+host = "localhost"
+# ssh_user             = "daniel"
+# ssh_private_key_path = "~/.ssh/id_ed25519_k3s"
+# k3s_version          = "v1.31.5+k3s1"
