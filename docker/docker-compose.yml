@@ -17,6 +17,7 @@ services:
     build: &build
       context: ../app
       dockerfile: ../docker/Dockerfile
+    image: ${IMAGE:-wuda:local}
     environment: &app-env
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in docker/.env}
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
@@ -31,6 +32,7 @@ services:
 
   web:
     build: *build
+    image: ${IMAGE:-wuda:local}
     environment: *app-env
     ports:
       - "8000:8000"
