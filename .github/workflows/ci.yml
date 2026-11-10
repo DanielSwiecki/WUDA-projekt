@@ -25,3 +25,34 @@ jobs:
       - run: python -m pip install -r requirements.txt ruff
       - run: python manage.py collectstatic --noinput
       - run: python manage.py test
+  stack:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      DJANGO_SECRET_KEY: ci-only-not-a-real-secret
+      DB_PASSWORD: ci-only-db-password
+      IMAGE: wuda:ci
+      CMD_COMPOSE: docker compose -f docker/docker-compose.yml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: app
+          file: docker/Dockerfile
+          load: true
+          tags: wuda:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - run: $CMD_COMPOSE up -d --no-build --wait --wait-timeout 120
+      - run: |
+          curl --fail --retry 5 --retry-delay 2 http://localhost:8000/readyz
+          $CMD_COMPOSE run --rm web python manage.py test
+      - if: failure()
+        run: $CMD_COMPOSE logs --no-color
+      - if: always()
+        run: $CMD_COMPOSE down -v
